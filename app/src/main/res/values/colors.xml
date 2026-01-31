@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#0D47A1</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <!-- Background Colors -->
+    <color name="backgroundColor">#F5F5F5</color>
+    <color name="cardBackground">#FFFFFF</color>
+
+    <!-- Vault Colors -->
+    <color name="vaultFood">#FF6B6B</color>
+    <color name="vaultTravel">#4ECDC4</color>
+    <color name="vaultLifestyle">#95E1D3</color>
+    <color name="vaultBusiness">#F38181</color>
+    <color name="vaultEmergency">#FF8C42</color>
+
+    <!-- Status Colors -->
+    <color name="statusSuccess">#4CAF50</color>
+    <color name="statusFailed">#F44336</color>
+    <color name="statusPending">#FFC107</color>
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+    <color name="textHint">#BDBDBD</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>
