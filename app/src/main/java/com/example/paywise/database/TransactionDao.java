@@ -34,7 +34,6 @@ public class TransactionDao {
         values.put("status", transaction.getStatus());
 
         long transactionId = db.insert(Constants.TABLE_TRANSACTIONS, null, values);
-        db.close();
         return transactionId;
     }
 
@@ -62,7 +61,6 @@ public class TransactionDao {
             cursor.close();
         }
 
-        db.close();
         return transactionList;
     }
 
@@ -90,7 +88,6 @@ public class TransactionDao {
             cursor.close();
         }
 
-        db.close();
         return transactionList;
     }
 
@@ -119,7 +116,6 @@ public class TransactionDao {
             cursor.close();
         }
 
-        db.close();
         return transactionList;
     }
 
@@ -143,7 +139,6 @@ public class TransactionDao {
             cursor.close();
         }
 
-        db.close();
         return transaction;
     }
 
@@ -163,7 +158,6 @@ public class TransactionDao {
                 "transaction_id = ?",
                 new String[]{String.valueOf(transactionId)});
 
-        db.close();
         return rowsAffected;
     }
 
@@ -186,7 +180,6 @@ public class TransactionDao {
             cursor.close();
         }
 
-        db.close();
         return totalSpent;
     }
 
@@ -224,7 +217,6 @@ public class TransactionDao {
         values.put("timestamp", timestamp);
 
         long logId = db.insert(Constants.TABLE_SERVICE_LOGS, null, values);
-        db.close();
         return logId;
     }
 }

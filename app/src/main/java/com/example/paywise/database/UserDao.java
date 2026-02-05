@@ -31,7 +31,6 @@ public class UserDao {
         values.put("updated_at", user.getUpdatedAt());
 
         long userId = db.insert(Constants.TABLE_USERS, null, values);
-        db.close();
         return userId;
     }
 
@@ -62,7 +61,6 @@ public class UserDao {
             cursor.close();
         }
 
-        db.close();
         return user;
     }
 
@@ -86,7 +84,6 @@ public class UserDao {
                 "user_id = ?",
                 new String[]{String.valueOf(user.getUserId())});
 
-        db.close();
         return rowsAffected;
     }
 
@@ -103,7 +100,6 @@ public class UserDao {
             exists = cursor.getInt(0) > 0;
         }
         cursor.close();
-        db.close();
         return exists;
     }
 
@@ -131,7 +127,6 @@ public class UserDao {
             cursor.close();
         }
 
-        db.close();
         return user;
     }
 }

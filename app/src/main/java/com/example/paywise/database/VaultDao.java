@@ -36,7 +36,6 @@ public class VaultDao {
         values.put("reset_date", vault.getResetDate());
 
         long vaultId = db.insert(Constants.TABLE_VAULTS, null, values);
-        db.close();
         return vaultId;
     }
 
@@ -64,7 +63,6 @@ public class VaultDao {
             cursor.close();
         }
 
-        db.close();
         return vaultList;
     }
 
@@ -88,7 +86,6 @@ public class VaultDao {
             cursor.close();
         }
 
-        db.close();
         return vault;
     }
 
@@ -114,7 +111,6 @@ public class VaultDao {
                 "vault_id = ?",
                 new String[]{String.valueOf(vault.getVaultId())});
 
-        db.close();
         return rowsAffected;
     }
 
@@ -134,7 +130,6 @@ public class VaultDao {
                 "vault_id = ?",
                 new String[]{String.valueOf(vaultId)});
 
-        db.close();
         return rowsAffected;
     }
 
@@ -153,7 +148,6 @@ public class VaultDao {
                 "vault_id = ?",
                 new String[]{String.valueOf(vaultId)});
 
-        db.close();
         return rowsAffected;
     }
 
@@ -174,7 +168,6 @@ public class VaultDao {
                 "user_id = ? AND is_active = 1",
                 new String[]{String.valueOf(userId)});
 
-        db.close();
         return rowsAffected;
     }
 
@@ -197,7 +190,6 @@ public class VaultDao {
             cursor.close();
         }
 
-        db.close();
         return totalBalance;
     }
 
@@ -218,7 +210,6 @@ public class VaultDao {
 
         boolean exists = cursor != null && cursor.getCount() > 0;
         if (cursor != null) cursor.close();
-        db.close();
         return exists;
     }
 
