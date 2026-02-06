@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/backgroundPrimary">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/link_bank_account"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:layout_marginTop="60dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Bank Name Label -->
+        <TextView
+            android:id="@+id/tvBankNameLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/bank_name"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Bank Name Spinner -->
+        <Spinner
+            android:id="@+id/spinnerBankName"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvBankNameLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Account Number Label -->
+        <TextView
+            android:id="@+id/tvAccountNumberLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/account_number"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/spinnerBankName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Account Number Input -->
+        <EditText
+            android:id="@+id/etAccountNumber"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:hint="Enter account number"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:inputType="number"
+            android:maxLength="18"
+            android:background="@drawable/bg_input_field"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvAccountNumberLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Account Holder Name Label -->
+        <TextView
+            android:id="@+id/tvAccountHolderLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/account_holder_name"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/etAccountNumber"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Account Holder Name Input -->
+        <EditText
+            android:id="@+id/etAccountHolderName"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:hint="Account holder name"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:inputType="textPersonName|textCapWords"
+            android:background="@drawable/bg_input_field"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvAccountHolderLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- IFSC Code Label -->
+        <TextView
+            android:id="@+id/tvIfscLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/ifsc_code"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/etAccountHolderName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- IFSC Code Input -->
+        <EditText
+            android:id="@+id/etIfscCode"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:hint="SBIN0001234"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:inputType="textCapCharacters"
+            android:maxLength="11"
+            android:background="@drawable/bg_input_field"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvIfscLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Error Message -->
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/red"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/etIfscCode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Verify Account Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVerifyAccount"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:text="@string/verify_account"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintTop_toBottomOf="@id/tvErrorMessage"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
