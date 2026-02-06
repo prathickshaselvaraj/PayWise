@@ -1,4 +1,4 @@
-package com.example.thinkpayai.models;
+package com.example.paywise.models;
 
 /**
  * BankAccount Model

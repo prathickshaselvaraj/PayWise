@@ -1,4 +1,4 @@
-package com.example.thinkpayai.utils;
+package com.example.paywise.utils;
 
 /**
  * Constants - Centralized configuration for ThinkPay AI
