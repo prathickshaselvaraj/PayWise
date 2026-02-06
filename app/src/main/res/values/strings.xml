@@ -1,11 +1,35 @@
 <resources>
-    <string name="app_name">PayWise</string>
+    <string name="app_name">ThinkPay AI</string>
 
     <!-- Splash Screen -->
     <string name="splash_tagline">Smart Budget, Smarter Payments</string>
 
+    <!-- LOGIN & AUTHENTICATION -->
+    <string name="login_title">Welcome Back</string>
+    <string name="enter_pin">Enter your PIN</string>
+    <string name="forgot_pin">Forgot PIN?</string>
+
+    <!-- ACCOUNT SETUP -->
+    <string name="welcome_title">Welcome to ThinkPay AI</string>
+    <string name="enter_mobile">Enter your mobile number</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="link_bank_account">Link Your Bank Account</string>
+    <string name="bank_name">Bank Name</string>
+    <string name="account_number">Account Number</string>
+    <string name="account_holder_name">Account Holder Name</string>
+    <string name="ifsc_code">IFSC Code</string>
+    <string name="verify_account">Verify Account</string>
+
+    <!-- PIN SETUP -->
+    <string name="create_pin_title">Set Your Security PIN</string>
+    <string name="create_pin_subtitle">This PIN will be used for login and payments</string>
+    <string name="create_6digit_pin">Create 6-digit PIN</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="emergency_pin_title">Set Emergency Vault PIN</string>
+    <string name="emergency_pin_subtitle">This is different from your login PIN</string>
+
     <!-- Profile Setup -->
-    <string name="profile_setup_title">Create Your Profile</string>
+    <string name="profile_setup_title">Complete Your Profile</string>
     <string name="hint_full_name">Full Name</string>
     <string name="hint_email">Email (Optional)</string>
     <string name="hint_phone">Phone Number</string>
@@ -13,14 +37,94 @@
     <string name="btn_continue">Continue</string>
 
     <!-- Main Dashboard -->
-    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_title">ThinkPay AI</string>
     <string name="menu_profile">Profile</string>
     <string name="menu_settings">Settings</string>
-    <string name="total_balance">Total Balance</string>
-    <string name="my_vaults">My Vaults</string>
-    <string name="recent_transactions">Recent Transactions</string>
-    <string name="btn_add_vault">Add Vault</string>
-    <string name="btn_make_payment">Make Payment</string>
+    <string name="total_balance">Total Available Balance</string>
+    <string name="bank_balance">Bank Balance</string>
+    <string name="my_vaults">My Budget Vaults</string>
+    <string name="recent_activity">Recent Activity</string>
+    <string name="btn_pay_someone">Pay Someone</string>
+    <string name="btn_add_vault">Add Custom Vault</string>
+    <string name="btn_view_vaults">Vaults</string>
+
+    <!-- PAYMENT METHODS -->
+    <string name="make_payment">Make Payment</string>
+    <string name="payment_method_title">Choose Payment Method</string>
+    <string name="vault_based_payment">Vault-Based Payment</string>
+    <string name="vault_based_subtitle">Select vault &amp; pay</string>
+    <string name="instant_pay">Instant Pay</string>
+    <string name="instant_pay_subtitle">Pay now, assign vault later</string>
+    <string name="emergency_payment">Emergency Payment</string>
+    <string name="emergency_payment_subtitle">Use emergency funds</string>
+
+    <!-- Payment Entry -->
+    <string name="pay_to">Pay to:</string>
+    <string name="merchant_name_hint">Merchant Name / UPI ID</string>
+    <string name="amount">Amount:</string>
+    <string name="amount_hint">Enter amount</string>
+    <string name="description">Description (Optional):</string>
+    <string name="description_hint">Add note</string>
+
+    <!-- Vault Selection -->
+    <string name="select_vault_title">Select a Vault</string>
+    <string name="vault_available">Available:</string>
+    <string name="vault_sufficient">Sufficient balance</string>
+    <string name="vault_insufficient">Insufficient balance</string>
+
+    <!-- Payment Confirmation -->
+    <string name="payment_review">Payment Review</string>
+    <string name="pay_to_label">Pay to:</string>
+    <string name="amount_label">Amount:</string>
+    <string name="from_vault">From:</string>
+    <string name="vault_before">Before:</string>
+    <string name="vault_after">After:</string>
+    <string name="enter_pin_confirm">Enter PIN to confirm:</string>
+    <string name="btn_pay_now">Pay Now</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- Processing -->
+    <string name="processing_payment">Processing...</string>
+    <string name="validating_payment">Validating payment to %s</string>
+    <string name="please_wait">Please wait...</string>
+
+    <!-- Success -->
+    <string name="payment_successful">Payment Successful!</string>
+    <string name="paid_to">%s paid to %s</string>
+    <string name="transaction_id">Transaction ID: %s</string>
+    <string name="btn_view_receipt">View Receipt</string>
+    <string name="btn_done">Done</string>
+
+    <!-- Instant Pay -->
+    <string name="instant_pay_title">Instant Payment</string>
+    <string name="auto_deduct_warning">This will auto-deduct from:</string>
+    <string name="default_vault_label">Lifestyle Vault (Default)</string>
+    <string name="reassign_vault_later">You can reassign the vault after payment from history.</string>
+    <string name="btn_instant_pay">Instant Pay</string>
+
+    <!-- Vault Reassignment -->
+    <string name="reassign_vault_title">Reassign to Correct Vault?</string>
+    <string name="currently_in">Currently in:</string>
+    <string name="move_to">Or move to:</string>
+    <string name="keep_in_current">Keep in %s</string>
+    <string name="btn_update_vault">Update Vault Assignment</string>
+    <string name="vault_change_warning">This will:</string>
+    <string name="restore_vault">Restore %s: ₹%.0f</string>
+    <string name="deduct_vault">Deduct %s: -₹%.0f</string>
+
+    <!-- Emergency Vault -->
+    <string name="emergency_access_title">Emergency Payment</string>
+    <string name="emergency_warning">⚠️ WARNING</string>
+    <string name="emergency_warning_message">You are accessing your Emergency Vault. This should only be used for genuine emergencies.</string>
+    <string name="emergency_vault_created">Emergency Vault Created</string>
+    <string name="emergency_vault_auto_message">An Emergency vault has been automatically created with:</string>
+    <string name="emergency_limit">Monthly Limit: ₹5,000</string>
+    <string name="emergency_requires_pin">Requires PIN for access</string>
+    <string name="set_emergency_pin">Set Emergency Vault PIN:</string>
+    <string name="emergency_pin_different">Different from login PIN</string>
+    <string name="enter_emergency_pin_title">Enter Emergency Vault PIN</string>
+    <string name="emergency_pin_note">This is your SPECIAL PIN for Emergency Vault access only.</string>
+    <string name="btn_proceed">Proceed</string>
 
     <!-- Vault Management -->
     <string name="vault_name">Vault Name</string>
@@ -32,41 +136,72 @@
     <string name="vault_lifestyle">Lifestyle</string>
     <string name="vault_business">Business</string>
     <string name="vault_emergency">Emergency</string>
+    <string name="vault_custom">Custom (Create your own)</string>
 
-    <!-- Payment Screen -->
-    <string name="payment_title">Make Payment</string>
-    <string name="merchant_name">Merchant Name</string>
-    <string name="amount">Amount (₹)</string>
-    <string name="select_vault">Select Vault</string>
-    <string name="description">Description (Optional)</string>
-    <string name="btn_pay_now">Pay Now</string>
-    <string name="payment_processing">Processing Payment…</string>
+    <!-- Custom Vault Creation -->
+    <string name="create_custom_vault">Create Custom Vault</string>
+    <string name="custom_category_name">Custom Category Name</string>
+    <string name="custom_category_hint">e.g., Healthcare, Education</string>
+    <string name="choose_icon">Choose Icon:</string>
+    <string name="choose_color">Choose Color:</string>
+    <string name="more_icons">More...</string>
 
     <!-- Transaction History -->
     <string name="transaction_history">Transaction History</string>
     <string name="filter_all">All</string>
     <string name="filter_success">Success</string>
     <string name="filter_failed">Failed</string>
+    <string name="btn_change_vault">Change</string>
+    <string name="vault_changed_from">Changed from %s</string>
+    <string name="pin_used">PIN Used</string>
 
-    <!-- Emergency Vault Dialog -->
-    <string name="emergency_warning_title">Emergency Vault Access</string>
-    <string name="emergency_warning_message">You are about to use your Emergency Vault. This should only be used in critical situations. Do you want to proceed?</string>
-    <string name="btn_proceed">Proceed</string>
-    <string name="btn_cancel">Cancel</string>
+    <!-- Change Vault Assignment -->
+    <string name="change_vault_title">Change Vault Assignment</string>
+    <string name="transaction_label">Transaction:</string>
+    <string name="date_label">Date:</string>
 
     <!-- Validation Messages -->
     <string name="error_empty_name">Name cannot be empty</string>
     <string name="error_invalid_phone">Invalid phone number</string>
+    <string name="error_invalid_mobile">Please enter valid 10-digit mobile number</string>
+    <string name="error_invalid_otp">Invalid OTP</string>
+    <string name="error_empty_bank_name">Please select bank name</string>
+    <string name="error_invalid_account">Invalid account number</string>
+    <string name="error_invalid_ifsc">Invalid IFSC code</string>
+    <string name="error_pin_mismatch">PINs do not match</string>
+    <string name="error_invalid_pin">PIN must be 6 digits</string>
+    <string name="error_wrong_pin">Wrong PIN. %d attempts remaining</string>
+    <string name="error_account_locked">Account locked. Try again in %d seconds</string>
+    <string name="error_empty_merchant">Merchant name is required</string>
+    <string name="error_empty_amount">Amount is required</string>
+    <string name="error_invalid_amount">Invalid amount</string>
+    <string name="error_no_vault_selected">Please select a vault</string>
     <string name="error_empty_vault_name">Vault name is required</string>
     <string name="error_invalid_limit">Please enter a valid limit</string>
     <string name="error_insufficient_balance">Insufficient balance in vault</string>
     <string name="error_limit_exceeded">Monthly limit exceeded</string>
+    <string name="error_vault_type_exists">This vault type already exists</string>
     <string name="payment_success">Payment successful!</string>
     <string name="payment_failed">Payment failed</string>
+
+    <!-- Bank List -->
+    <string name="select_bank">Select Bank</string>
+    <string name="sbi">State Bank of India</string>
+    <string name="hdfc">HDFC Bank</string>
+    <string name="icici">ICICI Bank</string>
+    <string name="axis">Axis Bank</string>
+    <string name="pnb">Punjab National Bank</string>
+    <string name="bob">Bank of Baroda</string>
+    <string name="canara">Canara Bank</string>
+    <string name="kotak">Kotak Mahindra Bank</string>
+    <string name="yes_bank">Yes Bank</string>
+    <string name="custom_bank">Other Bank</string>
 
     <!-- Notifications -->
     <string name="notif_low_balance_title">Low Vault Balance</string>
     <string name="notif_low_balance_text">Your %s vault is running low</string>
     <string name="notif_payment_validation">Validating Payment</string>
     <string name="notif_vault_reset">Monthly vault limits have been reset</string>
+    <string name="notif_payment_success">Payment to %s successful</string>
+    <string name="notif_payment_failed">Payment to %s failed</string>
 </resources>
