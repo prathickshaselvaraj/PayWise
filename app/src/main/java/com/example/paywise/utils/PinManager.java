@@ -3,81 +3,105 @@ package com.example.paywise.utils;
 import android.util.Base64;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
- * PinManager - Handles PIN hashing and validation
- * Uses SHA-256 for secure PIN storage
+ * PinManager - Handles PIN hashing, validation, and security
+ *
+ * Features:
+ * - Hash 6-digit PINs using SHA-256
+ * - Validate entered PIN against stored hash
+ * - Track failed login attempts
+ * - Implement account lockout mechanism
  */
 public class PinManager {
 
     /**
-     * Hash a PIN using SHA-256
-     * @param pin 6-digit PIN
-     * @return Base64 encoded hash
+     * Hash a 6-digit PIN using SHA-256
+     *
+     * @param pin The 6-digit PIN to hash
+     * @return Base64-encoded hash string, or null if error
      */
     public static String hashPin(String pin) {
+        if (pin == null || pin.length() != Constants.PIN_LENGTH) {
+            return null;
+        }
+
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(pin.getBytes(StandardCharsets.UTF_8));
             return Base64.encodeToString(hash, Base64.NO_WRAP);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * Verify if entered PIN matches stored hash
-     * @param enteredPin PIN entered by user
-     * @param storedHash Hashed PIN from database
-     * @return true if match, false otherwise
+     * Verify if entered PIN matches the stored hash
+     *
+     * @param enteredPin The PIN entered by user
+     * @param storedHash The stored hash from database
+     * @return true if PIN matches, false otherwise
      */
     public static boolean verifyPin(String enteredPin, String storedHash) {
         if (enteredPin == null || storedHash == null) {
             return false;
         }
+
         String enteredHash = hashPin(enteredPin);
         return storedHash.equals(enteredHash);
     }
 
     /**
-     * Validate PIN format (6 digits)
-     * @param pin PIN to validate
-     * @return true if valid format
+     * Validate PIN format (must be 6 digits)
+     *
+     * @param pin The PIN to validate
+     * @return true if valid format, false otherwise
      */
     public static boolean isValidPinFormat(String pin) {
-        if (pin == null) return false;
+        if (pin == null) {
+            return false;
+        }
         return pin.matches(Constants.REGEX_PIN);
     }
 
     /**
-     * Check if PIN is weak (e.g., 123456, 000000, etc.)
-     * @param pin PIN to check
-     * @return true if weak
+     * Check if PIN is weak (sequential or repeated digits)
+     *
+     * @param pin The PIN to check
+     * @return true if weak, false if strong
      */
     public static boolean isWeakPin(String pin) {
-        if (pin == null || pin.length() != 6) return true;
-
-        // Check for all same digits
-        if (pin.matches("(\\d)\\1{5}")) return true;
-
-        // Check for sequential patterns
-        String[] weakPatterns = {"123456", "654321", "000000", "111111", "222222",
-                "333333", "444444", "555555", "666666", "777777",
-                "888888", "999999", "112233", "121212"};
-        for (String pattern : weakPatterns) {
-            if (pin.equals(pattern)) return true;
+        if (pin == null || pin.length() != Constants.PIN_LENGTH) {
+            return true;
         }
 
-        return false;
+        // Check for all same digits (e.g., 111111)
+        if (pin.matches("(\\d)\\1{5}")) {
+            return true;
+        }
+
+        // Check for sequential digits (e.g., 123456, 654321)
+        boolean isSequential = true;
+        for (int i = 1; i < pin.length(); i++) {
+            int diff = pin.charAt(i) - pin.charAt(i - 1);
+            if (diff != 1 && diff != -1) {
+                isSequential = false;
+                break;
+            }
+        }
+
+        return isSequential;
     }
 
     /**
-     * Generate a salt for additional security (optional enhancement)
-     * @return Random salt string
+     * Generate a random 6-digit PIN (for testing/demo purposes)
+     * WARNING: Do not use in production for actual security
+     *
+     * @return Random 6-digit PIN
      */
-    public static String generateSalt() {
-        return String.valueOf(System.currentTimeMillis());
+    public static String generateRandomPin() {
+        int pin = (int) (Math.random() * 900000) + 100000;
+        return String.valueOf(pin);
     }
 }

@@ -1,85 +1,203 @@
 package com.example.paywise.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 /**
- * SessionManager - Manages user session and auto-lock functionality
- * Tracks user activity and enforces session timeout
+ * SessionManager - Manages user session, auto-lock, and activity tracking
+ *
+ * Features:
+ * - Track user login session
+ * - Implement auto-lock after inactivity
+ * - Manage failed login attempts
+ * - Handle account lockout
  */
 public class SessionManager {
-    private PreferenceManager preferenceManager;
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
     private Context context;
 
     public SessionManager(Context context) {
         this.context = context;
-        this.preferenceManager = new PreferenceManager(context);
+        sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
     }
 
-    /**
-     * Start a new session
-     */
-    public void startSession() {
-        preferenceManager.saveSessionActive(true);
-        updateLastActivityTime();
-    }
+    // ============================================================
+    // SESSION MANAGEMENT
+    // ============================================================
 
     /**
-     * End current session
+     * Mark user as logged in and start session
      */
-    public void endSession() {
-        preferenceManager.saveSessionActive(false);
+    public void createSession(int userId, String userName, String mobileNumber) {
+        editor.putInt(Constants.PREF_USER_ID, userId);
+        editor.putString(Constants.PREF_USER_NAME, userName);
+        editor.putString(Constants.PREF_MOBILE_NUMBER, mobileNumber);
+        editor.putBoolean(Constants.PREF_IS_LOGGED_IN, true);
+        editor.putBoolean(Constants.PREF_SESSION_ACTIVE, true);
+        editor.putLong(Constants.PREF_LAST_ACTIVITY_TIME, System.currentTimeMillis());
+        editor.apply();
     }
 
     /**
      * Update last activity timestamp
      */
-    public void updateLastActivityTime() {
-        long currentTime = System.currentTimeMillis();
-        preferenceManager.saveLastActivityTime(currentTime);
+    public void updateActivity() {
+        editor.putLong(Constants.PREF_LAST_ACTIVITY_TIME, System.currentTimeMillis());
+        editor.apply();
     }
 
     /**
-     * Check if session is active
-     * @return true if session is active and not timed out
+     * Check if session has timed out (5 minutes inactivity)
+     *
+     * @return true if session expired, false if still active
+     */
+    public boolean isSessionExpired() {
+        if (!isLoggedIn()) {
+            return true;
+        }
+
+        long lastActivity = sharedPreferences.getLong(Constants.PREF_LAST_ACTIVITY_TIME, 0);
+        long currentTime = System.currentTimeMillis();
+        long elapsed = currentTime - lastActivity;
+
+        return elapsed > Constants.SESSION_TIMEOUT_MS;
+    }
+
+    /**
+     * Lock session (require PIN re-entry)
+     */
+    public void lockSession() {
+        editor.putBoolean(Constants.PREF_SESSION_ACTIVE, false);
+        editor.apply();
+    }
+
+    /**
+     * Unlock session after successful PIN verification
+     */
+    public void unlockSession() {
+        editor.putBoolean(Constants.PREF_SESSION_ACTIVE, true);
+        editor.putLong(Constants.PREF_LAST_ACTIVITY_TIME, System.currentTimeMillis());
+        editor.apply();
+    }
+
+    /**
+     * Check if session is currently active (not locked)
      */
     public boolean isSessionActive() {
-        if (!preferenceManager.isSessionActive()) {
-            return false;
-        }
-
-        long lastActivityTime = preferenceManager.getLastActivityTime();
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastActivityTime;
-
-        // Check if session has timed out (5 minutes of inactivity)
-        if (elapsedTime > Constants.SESSION_TIMEOUT_MS) {
-            endSession();
-            return false;
-        }
-
-        return true;
+        return sharedPreferences.getBoolean(Constants.PREF_SESSION_ACTIVE, false);
     }
 
     /**
-     * Get remaining session time in milliseconds
+     * Logout user and clear all session data
      */
-    public long getRemainingSessionTime() {
-        if (!preferenceManager.isSessionActive()) {
-            return 0;
-        }
+    public void logout() {
+        editor.clear();
+        editor.apply();
+    }
 
-        long lastActivityTime = preferenceManager.getLastActivityTime();
+    // ============================================================
+    // USER INFO GETTERS
+    // ============================================================
+
+    public boolean isLoggedIn() {
+        return sharedPreferences.getBoolean(Constants.PREF_IS_LOGGED_IN, false);
+    }
+
+    public int getUserId() {
+        return sharedPreferences.getInt(Constants.PREF_USER_ID, -1);
+    }
+
+    public String getUserName() {
+        return sharedPreferences.getString(Constants.PREF_USER_NAME, "");
+    }
+
+    public String getMobileNumber() {
+        return sharedPreferences.getString(Constants.PREF_MOBILE_NUMBER, "");
+    }
+
+    public String getProfileImage() {
+        return sharedPreferences.getString(Constants.PREF_PROFILE_IMAGE, "");
+    }
+
+    public void saveProfileImage(String imagePath) {
+        editor.putString(Constants.PREF_PROFILE_IMAGE, imagePath);
+        editor.apply();
+    }
+
+    // ============================================================
+    // BANK ACCOUNT & VAULT INFO
+    // ============================================================
+
+    public boolean hasBankAccount() {
+        return sharedPreferences.getBoolean(Constants.PREF_HAS_BANK_ACCOUNT, false);
+    }
+
+    public void setHasBankAccount(boolean hasBankAccount) {
+        editor.putBoolean(Constants.PREF_HAS_BANK_ACCOUNT, hasBankAccount);
+        editor.apply();
+    }
+
+    public int getEmergencyVaultId() {
+        return sharedPreferences.getInt(Constants.PREF_EMERGENCY_VAULT_ID, -1);
+    }
+
+    public void setEmergencyVaultId(int vaultId) {
+        editor.putInt(Constants.PREF_EMERGENCY_VAULT_ID, vaultId);
+        editor.apply();
+    }
+
+    public int getDefaultInstantVaultId() {
+        return sharedPreferences.getInt(Constants.PREF_DEFAULT_INSTANT_VAULT_ID, -1);
+    }
+
+    public void setDefaultInstantVaultId(int vaultId) {
+        editor.putInt(Constants.PREF_DEFAULT_INSTANT_VAULT_ID, vaultId);
+        editor.apply();
+    }
+
+    // ============================================================
+    // LOCKOUT MANAGEMENT
+    // ============================================================
+
+    /**
+     * Get time remaining for account lockout (in seconds)
+     *
+     * @return seconds remaining, or 0 if not locked
+     */
+    public long getLockoutTimeRemaining() {
+        long lockoutUntil = sharedPreferences.getLong("lockout_until", 0);
         long currentTime = System.currentTimeMillis();
-        long elapsedTime = currentTime - lastActivityTime;
-        long remainingTime = Constants.SESSION_TIMEOUT_MS - elapsedTime;
 
-        return remainingTime > 0 ? remainingTime : 0;
+        if (currentTime < lockoutUntil) {
+            return (lockoutUntil - currentTime) / 1000; // Convert to seconds
+        }
+        return 0;
     }
 
     /**
-     * Check if session requires re-authentication
+     * Set account lockout for specified duration
      */
-    public boolean requiresReAuthentication() {
-        return !isSessionActive();
+    public void setLockout(long durationMs) {
+        long lockoutUntil = System.currentTimeMillis() + durationMs;
+        editor.putLong("lockout_until", lockoutUntil);
+        editor.apply();
+    }
+
+    /**
+     * Clear lockout
+     */
+    public void clearLockout() {
+        editor.remove("lockout_until");
+        editor.apply();
+    }
+
+    /**
+     * Check if account is currently locked
+     */
+    public boolean isAccountLocked() {
+        return getLockoutTimeRemaining() > 0;
     }
 }

@@ -8,14 +8,22 @@ import android.provider.MediaStore;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
- * ImageUtils - Image handling and manipulation utilities
+ * ImageUtils - Image manipulation and storage utilities
+ *
+ * Features:
+ * - Load images from URI
+ * - Resize and compress images
+ * - Save to internal storage
+ * - Load from internal storage
  */
 public class ImageUtils {
 
     /**
      * Compress and save image to internal storage
+     *
      * @param context Application context
      * @param imageUri URI of the selected image
      * @param fileName Name to save the file as
@@ -43,7 +51,7 @@ public class ImageUtils {
 
             return imageFile.getAbsolutePath();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -51,6 +59,7 @@ public class ImageUtils {
 
     /**
      * Resize bitmap to specified max dimension while maintaining aspect ratio
+     *
      * @param bitmap Original bitmap
      * @param maxSize Maximum width or height
      * @return Resized bitmap
@@ -76,6 +85,7 @@ public class ImageUtils {
 
     /**
      * Load bitmap from internal storage
+     *
      * @param imagePath Path to the image file
      * @return Bitmap or null if failed
      */
@@ -93,6 +103,7 @@ public class ImageUtils {
 
     /**
      * Delete image from internal storage
+     *
      * @param imagePath Path to the image file
      * @return true if deleted successfully
      */
@@ -110,6 +121,7 @@ public class ImageUtils {
 
     /**
      * Get file size in KB
+     *
      * @param imagePath Path to the image file
      * @return File size in KB
      */

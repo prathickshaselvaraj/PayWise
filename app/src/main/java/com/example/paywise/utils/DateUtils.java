@@ -11,11 +11,11 @@ import java.util.Locale;
 public class DateUtils {
 
     // ============================================================
-    // CURRENT DATE/TIME
+    // CURRENT DATE/TIME METHODS
     // ============================================================
 
     /**
-     * Get current date and time in ISO format
+     * Get current date and time in ISO format (yyyy-MM-dd HH:mm:ss)
      */
     public static String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -23,7 +23,7 @@ public class DateUtils {
     }
 
     /**
-     * Get current date
+     * Get current date only (yyyy-MM-dd)
      */
     public static String getCurrentDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -31,18 +31,20 @@ public class DateUtils {
     }
 
     /**
-     * Get current timestamp in milliseconds
+     * Get current time only (HH:mm:ss)
      */
-    public static long getCurrentTimestamp() {
-        return System.currentTimeMillis();
+    public static String getCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
     }
 
     // ============================================================
-    // FORMATTING
+    // FORMATTING METHODS
     // ============================================================
 
     /**
-     * Format date for display (e.g., "Feb 05, 2026")
+     * Format date for display (MMM dd, yyyy)
+     * Example: Jan 21, 2026
      */
     public static String formatDateForDisplay(String dateString) {
         try {
@@ -57,7 +59,8 @@ public class DateUtils {
     }
 
     /**
-     * Format date and time for display (e.g., "Feb 05, 2026 02:45 PM")
+     * Format date and time for display (MMM dd, yyyy hh:mm a)
+     * Example: Jan 21, 2026 02:45 PM
      */
     public static String formatDateTimeForDisplay(String dateString) {
         try {
@@ -72,7 +75,8 @@ public class DateUtils {
     }
 
     /**
-     * Format time only (e.g., "02:45 PM")
+     * Format time only (hh:mm a)
+     * Example: 02:45 PM
      */
     public static String formatTimeForDisplay(String dateString) {
         try {
@@ -87,42 +91,44 @@ public class DateUtils {
     }
 
     /**
-     * Get relative time (e.g., "Today", "Yesterday")
+     * Get transaction date label (Today, Yesterday, or date)
      */
-    public static String getRelativeDate(String dateString) {
+    public static String getTransactionDateLabel(String dateString) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            Date date = sdf.parse(dateString.substring(0, 10));
-            Date today = new Date();
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            Date transactionDate = inputFormat.parse(dateString);
 
-            Calendar cal1 = Calendar.getInstance();
-            Calendar cal2 = Calendar.getInstance();
-            cal1.setTime(date);
-            cal2.setTime(today);
+            Calendar transactionCal = Calendar.getInstance();
+            transactionCal.setTime(transactionDate);
 
-            boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+            Calendar today = Calendar.getInstance();
+            Calendar yesterday = Calendar.getInstance();
+            yesterday.add(Calendar.DAY_OF_YEAR, -1);
 
-            if (sameDay) {
+            if (isSameDay(transactionCal, today)) {
                 return "Today";
-            }
-
-            cal2.add(Calendar.DAY_OF_YEAR, -1);
-            boolean yesterday = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                    cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-
-            if (yesterday) {
+            } else if (isSameDay(transactionCal, yesterday)) {
                 return "Yesterday";
+            } else {
+                SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                return outputFormat.format(transactionDate);
             }
-
-            return formatDateForDisplay(dateString);
         } catch (Exception e) {
+            e.printStackTrace();
             return dateString;
         }
     }
 
+    /**
+     * Check if two calendar dates are on the same day
+     */
+    private static boolean isSameDay(Calendar cal1, Calendar cal2) {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
     // ============================================================
-    // VAULT RESET
+    // VAULT RESET METHODS
     // ============================================================
 
     /**
@@ -132,6 +138,10 @@ public class DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, 1);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return sdf.format(calendar.getTime());
     }
@@ -156,7 +166,7 @@ public class DateUtils {
     // ============================================================
 
     /**
-     * Get day of month
+     * Get day of month (1-31)
      */
     public static int getDayOfMonth() {
         Calendar calendar = Calendar.getInstance();
@@ -164,7 +174,7 @@ public class DateUtils {
     }
 
     /**
-     * Get current month name
+     * Get current month name (January, February, etc.)
      */
     public static String getCurrentMonthName() {
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM", Locale.getDefault());
@@ -172,24 +182,32 @@ public class DateUtils {
     }
 
     /**
-     * Get month and year (e.g., "February 2026")
+     * Get time elapsed since timestamp (e.g., "2 hours ago")
      */
-    public static String getCurrentMonthYear() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-        return sdf.format(new Date());
-    }
+    public static String getTimeElapsed(String dateString) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            Date past = sdf.parse(dateString);
+            Date now = new Date();
 
-    /**
-     * Format milliseconds to readable time (e.g., "2m 30s")
-     */
-    public static String formatMillisToReadable(long millis) {
-        long seconds = (millis / 1000) % 60;
-        long minutes = (millis / (1000 * 60)) % 60;
+            long diff = now.getTime() - past.getTime();
+            long seconds = diff / 1000;
+            long minutes = seconds / 60;
+            long hours = minutes / 60;
+            long days = hours / 24;
 
-        if (minutes > 0) {
-            return String.format("%dm %ds", minutes, seconds);
-        } else {
-            return String.format("%ds", seconds);
+            if (days > 0) {
+                return days + " day" + (days > 1 ? "s" : "") + " ago";
+            } else if (hours > 0) {
+                return hours + " hour" + (hours > 1 ? "s" : "") + " ago";
+            } else if (minutes > 0) {
+                return minutes + " minute" + (minutes > 1 ? "s" : "") + " ago";
+            } else {
+                return "Just now";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 }
