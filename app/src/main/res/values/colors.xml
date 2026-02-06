@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="colorPrimary">#1976D2</color>
-    <color name="colorPrimaryDark">#0D47A1</color>
-    <color name="colorAccent">#FF5722</color>
+    <!-- Primary Colors (GPay-style Blue) -->
+    <color name="primary">#0066FF</color>
+    <color name="primaryDark">#0052CC</color>
+    <color name="accent">#34A853</color>
 
     <!-- Background Colors -->
-    <color name="backgroundColor">#F5F5F5</color>
-    <color name="cardBackground">#FFFFFF</color>
+    <color name="backgroundPrimary">#FFFFFF</color>
+    <color name="backgroundSecondary">#F5F5F5</color>
+    <color name="vaultCardBackground">#FFFFFF</color>
 
-    <!-- Vault Colors -->
+    <!-- Text Colors -->
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Vault Colors (Vibrant) -->
     <color name="vaultFood">#FF6B6B</color>
     <color name="vaultTravel">#4ECDC4</color>
     <color name="vaultLifestyle">#95E1D3</color>
     <color name="vaultBusiness">#F38181</color>
     <color name="vaultEmergency">#FF8C42</color>
 
-    <!-- Status Colors -->
-    <color name="statusSuccess">#4CAF50</color>
-    <color name="statusFailed">#F44336</color>
-    <color name="statusPending">#FFC107</color>
+    <!-- Additional Colors for Custom Vaults -->
+    <color name="purple">#9B59B6</color>
+    <color name="blue">#3498DB</color>
+    <color name="green">#4CAF50</color>
+    <color name="yellow">#F1C40F</color>
+    <color name="pink">#E91E63</color>
+    <color name="brown">#795548</color>
+    <color name="grey">#607D8B</color>
 
-    <!-- Text Colors -->
-    <color name="textPrimary">#212121</color>
-    <color name="textSecondary">#757575</color>
-    <color name="textHint">#BDBDBD</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <!-- Status Colors -->
+    <color name="red">#F44336</color>
+    <color name="orange">#FF9800</color>
 </resources>

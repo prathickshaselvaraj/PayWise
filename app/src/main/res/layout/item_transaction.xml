@@ -1,81 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardTransaction"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/margin_medium"
-    android:layout_marginEnd="@dimen/margin_medium"
-    android:layout_marginTop="@dimen/margin_small"
-    android:layout_marginBottom="@dimen/margin_small"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardElevation="@dimen/card_elevation">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/padding_medium"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <!-- Top Row: Merchant Name and Amount -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tvMerchantName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Merchant Name"
-                android:textSize="@dimen/text_size_medium"
-                android:textColor="@color/textPrimary"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvVaultName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Food Vault"
-                android:textSize="@dimen/text_size_small"
-                android:textColor="@color/textSecondary"
-                android:layout_marginTop="4dp"/>
-
-            <TextView
-                android:id="@+id/tvTransactionDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Jan 21, 2026"
-                android:textSize="@dimen/text_size_small"
-                android:textColor="@color/textSecondary"
-                android:layout_marginTop="2dp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end">
+                android:layout_weight="1"
+                android:text="Zomato"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary" />
 
             <TextView
                 android:id="@+id/tvAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="- ₹500"
-                android:textSize="@dimen/text_size_medium"
-                android:textColor="@color/statusFailed"
-                android:textStyle="bold"/>
+                android:text="- ₹450"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/red" />
+
+        </LinearLayout>
+
+        <!-- Vault Info and Status Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvVaultInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🍔 Food Vault"
+                android:textSize="14sp"
+                android:textColor="@color/textSecondary" />
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Success"
-                android:textSize="@dimen/text_size_small"
-                android:textColor="@color/statusSuccess"
-                android:layout_marginTop="4dp"/>
+                android:text="✓ Success"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/green" />
+
         </LinearLayout>
+
+        <!-- Date and Time Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvTransactionDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today"
+                android:textSize="12sp"
+                android:textColor="@color/textSecondary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=", "
+                android:textSize="12sp"
+                android:textColor="@color/textSecondary" />
+
+            <TextView
+                android:id="@+id/tvTransactionTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2:45 PM"
+                android:textSize="12sp"
+                android:textColor="@color/textSecondary" />
+
+        </LinearLayout>
+
+        <!-- Payment Method Badge -->
+        <TextView
+            android:id="@+id/tvPaymentMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚡ Instant Pay"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/orange"
+            android:background="@drawable/bg_payment_method_instant"
+            android:layout_marginTop="8dp" />
+
+        <!-- Vault Changed Indicator -->
+        <TextView
+            android:id="@+id/tvVaultChanged"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Changed from Lifestyle"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:textColor="@color/blue"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lunch order"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
+        <!-- Change Vault Button (for instant payments) -->
+        <TextView
+            android:id="@+id/tvChangeVaultButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change Vault"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:background="@drawable/bg_button_outlined"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 
