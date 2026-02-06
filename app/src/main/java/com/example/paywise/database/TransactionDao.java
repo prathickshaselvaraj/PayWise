@@ -9,7 +9,18 @@ import com.example.paywise.utils.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TransactionDao - Data Access Object for transactions table
+ *
+ * Handles all database operations for transactions:
+ * - Insert new transaction
+ * - Get transactions by vault/user
+ * - Update transaction status
+ * - Reassign transaction to different vault
+ * - Track vault changes
+ */
 public class TransactionDao {
+
     private DatabaseHelper dbHelper;
 
     public TransactionDao(Context context) {
@@ -18,6 +29,7 @@ public class TransactionDao {
 
     /**
      * Insert a new transaction
+     *
      * @param transaction Transaction object
      * @return transaction ID of inserted transaction, -1 if failed
      */
@@ -26,19 +38,25 @@ public class TransactionDao {
         ContentValues values = new ContentValues();
 
         values.put("vault_id", transaction.getVaultId());
+        values.put("original_vault_id", transaction.getOriginalVaultId());
         values.put("merchant_name", transaction.getMerchantName());
         values.put("amount", transaction.getAmount());
         values.put("transaction_type", transaction.getTransactionType());
+        values.put("payment_method", transaction.getPaymentMethod());
         values.put("description", transaction.getDescription());
         values.put("transaction_date", transaction.getTransactionDate());
         values.put("status", transaction.getStatus());
+        values.put("vault_changed", transaction.isVaultChanged() ? 1 : 0);
+        values.put("vault_changed_at", transaction.getVaultChangedAt());
 
         long transactionId = db.insert(Constants.TABLE_TRANSACTIONS, null, values);
+        db.close();
         return transactionId;
     }
 
     /**
      * Get all transactions for a vault
+     *
      * @param vaultId Vault ID
      * @return List of transactions
      */
@@ -61,11 +79,13 @@ public class TransactionDao {
             cursor.close();
         }
 
+        db.close();
         return transactionList;
     }
 
     /**
      * Get all transactions for user (across all vaults)
+     *
      * @param userId User ID
      * @return List of transactions
      */
@@ -88,11 +108,13 @@ public class TransactionDao {
             cursor.close();
         }
 
+        db.close();
         return transactionList;
     }
 
     /**
      * Get recent transactions (limit)
+     *
      * @param userId User ID
      * @param limit Number of transactions to fetch
      * @return List of recent transactions
@@ -116,11 +138,13 @@ public class TransactionDao {
             cursor.close();
         }
 
+        db.close();
         return transactionList;
     }
 
     /**
      * Get transaction by ID
+     *
      * @param transactionId Transaction ID
      * @return Transaction object or null
      */
@@ -139,11 +163,13 @@ public class TransactionDao {
             cursor.close();
         }
 
+        db.close();
         return transaction;
     }
 
     /**
      * Update transaction status
+     *
      * @param transactionId Transaction ID
      * @param status New status
      * @return number of rows affected
@@ -158,11 +184,81 @@ public class TransactionDao {
                 "transaction_id = ?",
                 new String[]{String.valueOf(transactionId)});
 
+        db.close();
         return rowsAffected;
     }
 
     /**
+     * Reassign transaction to different vault
+     * This updates both vaults' spending amounts
+     *
+     * @param transactionId Transaction ID
+     * @param newVaultId New vault ID
+     * @param changeTimestamp Timestamp of change
+     * @return true if successful, false otherwise
+     */
+    public boolean reassignTransactionVault(int transactionId, int newVaultId, String changeTimestamp) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.beginTransaction();
+
+        try {
+            // Get transaction details
+            Transaction transaction = getTransactionById(transactionId);
+            if (transaction == null || !transaction.isSuccessful()) {
+                db.endTransaction();
+                return false;
+            }
+
+            int oldVaultId = transaction.getVaultId();
+            double amount = transaction.getAmount();
+
+            // Get old vault and restore its spending
+            VaultDao vaultDao = new VaultDao(db.getContext());
+            Vault oldVault = vaultDao.getVaultById(oldVaultId);
+            if (oldVault != null) {
+                double newOldSpent = oldVault.getCurrentSpent() - amount;
+                vaultDao.updateVaultSpending(oldVaultId, Math.max(0, newOldSpent));
+            }
+
+            // Get new vault and add to its spending
+            Vault newVault = vaultDao.getVaultById(newVaultId);
+            if (newVault != null) {
+                double newVaultSpent = newVault.getCurrentSpent() + amount;
+                vaultDao.updateVaultSpending(newVaultId, newVaultSpent);
+            }
+
+            // Update transaction
+            ContentValues values = new ContentValues();
+            values.put("vault_id", newVaultId);
+
+            // Set original vault ID if not already set
+            if (transaction.getOriginalVaultId() == 0) {
+                values.put("original_vault_id", oldVaultId);
+            }
+
+            values.put("vault_changed", 1);
+            values.put("vault_changed_at", changeTimestamp);
+
+            int rowsAffected = db.update(Constants.TABLE_TRANSACTIONS,
+                    values,
+                    "transaction_id = ?",
+                    new String[]{String.valueOf(transactionId)});
+
+            if (rowsAffected > 0) {
+                db.setTransactionSuccessful();
+            }
+
+            return rowsAffected > 0;
+
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
+    /**
      * Get total spent for a vault
+     *
      * @param vaultId Vault ID
      * @return Total spent amount
      */
@@ -180,7 +276,67 @@ public class TransactionDao {
             cursor.close();
         }
 
+        db.close();
         return totalSpent;
+    }
+
+    /**
+     * Get transactions by payment method
+     *
+     * @param userId User ID
+     * @param paymentMethod Payment method (vault_based, instant_pay, emergency)
+     * @return List of transactions
+     */
+    public List<Transaction> getTransactionsByPaymentMethod(int userId, String paymentMethod) {
+        List<Transaction> transactionList = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String query = "SELECT t.* FROM " + Constants.TABLE_TRANSACTIONS + " t " +
+                "INNER JOIN " + Constants.TABLE_VAULTS + " v ON t.vault_id = v.vault_id " +
+                "WHERE v.user_id = ? AND t.payment_method = ? " +
+                "ORDER BY t.transaction_date DESC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId), paymentMethod});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Transaction transaction = extractTransactionFromCursor(cursor);
+                transactionList.add(transaction);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return transactionList;
+    }
+
+    /**
+     * Get transactions that had vault reassignment
+     *
+     * @param userId User ID
+     * @return List of transactions with vault changes
+     */
+    public List<Transaction> getReassignedTransactions(int userId) {
+        List<Transaction> transactionList = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String query = "SELECT t.* FROM " + Constants.TABLE_TRANSACTIONS + " t " +
+                "INNER JOIN " + Constants.TABLE_VAULTS + " v ON t.vault_id = v.vault_id " +
+                "WHERE v.user_id = ? AND t.vault_changed = 1 " +
+                "ORDER BY t.vault_changed_at DESC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Transaction transaction = extractTransactionFromCursor(cursor);
+                transactionList.add(transaction);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+        return transactionList;
     }
 
     /**
@@ -190,17 +346,28 @@ public class TransactionDao {
         Transaction transaction = new Transaction();
         transaction.setTransactionId(cursor.getInt(cursor.getColumnIndexOrThrow("transaction_id")));
         transaction.setVaultId(cursor.getInt(cursor.getColumnIndexOrThrow("vault_id")));
+
+        int originalVaultIdIndex = cursor.getColumnIndex("original_vault_id");
+        if (originalVaultIdIndex != -1 && !cursor.isNull(originalVaultIdIndex)) {
+            transaction.setOriginalVaultId(cursor.getInt(originalVaultIdIndex));
+        }
+
         transaction.setMerchantName(cursor.getString(cursor.getColumnIndexOrThrow("merchant_name")));
         transaction.setAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("amount")));
         transaction.setTransactionType(cursor.getString(cursor.getColumnIndexOrThrow("transaction_type")));
+        transaction.setPaymentMethod(cursor.getString(cursor.getColumnIndexOrThrow("payment_method")));
         transaction.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
         transaction.setTransactionDate(cursor.getString(cursor.getColumnIndexOrThrow("transaction_date")));
         transaction.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+        transaction.setVaultChanged(cursor.getInt(cursor.getColumnIndexOrThrow("vault_changed")) == 1);
+        transaction.setVaultChangedAt(cursor.getString(cursor.getColumnIndexOrThrow("vault_changed_at")));
+
         return transaction;
     }
 
     /**
      * Insert service log
+     *
      * @param serviceName Name of the service
      * @param actionType Type of action performed
      * @param message Log message
@@ -217,6 +384,7 @@ public class TransactionDao {
         values.put("timestamp", timestamp);
 
         long logId = db.insert(Constants.TABLE_SERVICE_LOGS, null, values);
+        db.close();
         return logId;
     }
 }
