@@ -1,96 +1,149 @@
-package com.example.paywise.services;
+package com.example.paywise.receivers;
 
-import android.app.Service;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.IBinder;
-import androidx.annotation.Nullable;
-import com.example.paywise.database.TransactionDao;
-import com.example.paywise.managers.VaultManager;
-import com.example.paywise.utils.DateUtils;
-import com.example.paywise.utils.PreferenceManager;
+import android.os.Build;
+import androidx.core.app.NotificationCompat;
+import com.example.paywise.R;
+import com.example.paywise.activities.MainActivity;
+import com.example.paywise.services.VaultMonitorService;
 
 /**
- * Background service that monitors vaults and performs monthly reset
- * This service runs periodically to check if vault reset is needed
+ * PaymentAlertReceiver - Broadcast receiver for scheduled alerts
+ *
+ * Receives broadcasts for:
+ * - Daily vault balance checks
+ * - Monthly reset reminders
+ * - Payment limit alerts
  */
-public class VaultMonitorService extends Service {
+public class PaymentAlertReceiver extends BroadcastReceiver {
 
-    private Handler handler;
-    private Runnable monitorRunnable;
-    private static final long MONITOR_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
-
-    private VaultManager vaultManager;
-    private TransactionDao transactionDao;
-    private PreferenceManager preferenceManager;
+    private static final String CHANNEL_ID = "payment_alerts_channel";
+    public static final String ACTION_DAILY_CHECK = "com.example.paywise.action.DAILY_CHECK";
+    public static final String ACTION_MONTHLY_RESET = "com.example.paywise.action.MONTHLY_RESET";
+    public static final String ACTION_LIMIT_ALERT = "com.example.paywise.action.LIMIT_ALERT";
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
 
-        vaultManager = new VaultManager(this);
-        transactionDao = new TransactionDao(this);
-        preferenceManager = new PreferenceManager(this);
+        if (action == null) {
+            return;
+        }
 
-        handler = new Handler();
+        switch (action) {
+            case ACTION_DAILY_CHECK:
+                handleDailyCheck(context);
+                break;
 
-        monitorRunnable = new Runnable() {
-            @Override
-            public void run() {
-                performMonitoring();
-                // Schedule next run
-                handler.postDelayed(this, MONITOR_INTERVAL);
-            }
-        };
-    }
+            case ACTION_MONTHLY_RESET:
+                handleMonthlyReset(context);
+                break;
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        // Start monitoring
-        handler.post(monitorRunnable);
+            case ACTION_LIMIT_ALERT:
+                handleLimitAlert(context, intent);
+                break;
 
-        // Log service start
-        logServiceAction("VaultMonitorService", "START", "Vault monitoring started");
-
-        return START_STICKY; // Service will be restarted if killed
-    }
-
-    private void performMonitoring() {
-        int userId = preferenceManager.getUserId();
-
-        if (userId != -1) {
-            // Check if monthly reset is needed
-            if (vaultManager.needsReset(userId)) {
-                boolean resetSuccess = vaultManager.resetMonthlyVaults(userId);
-
-
-                if (resetSuccess) {
-                    logServiceAction("VaultMonitorService", "RESET",
-                            "Monthly vault reset completed for user " + userId);
-
-                    // Send broadcast for vault reset notification
-                    Intent broadcastIntent = new Intent("com.example.paywise.VAULT_RESET");
-                    sendBroadcast(broadcastIntent);
-                }
-            }
+            case Intent.ACTION_BOOT_COMPLETED:
+                // Restart scheduled alarms after device boot
+                handleBootCompleted(context);
+                break;
         }
     }
 
-    private void logServiceAction(String serviceName, String actionType, String message) {
-        String timestamp = DateUtils.getCurrentDateTime();
-        transactionDao.insertServiceLog(serviceName, actionType, message, timestamp);
+    /**
+     * Handle daily vault check
+     */
+    private void handleDailyCheck(Context context) {
+        // Start VaultMonitorService to check vaults
+        Intent serviceIntent = new Intent(context, VaultMonitorService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);
+        } else {
+            context.startService(serviceIntent);
+        }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacks(monitorRunnable);
-        logServiceAction("VaultMonitorService", "STOP", "Vault monitoring stopped");
+    /**
+     * Handle monthly reset reminder
+     */
+    private void handleMonthlyReset(Context context) {
+        sendNotification(
+                context,
+                "Monthly Vault Reset",
+                "Your vaults will reset at the start of next month",
+                3001
+        );
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null; // This is not a bound service
+    /**
+     * Handle spending limit alert
+     */
+    private void handleLimitAlert(Context context, Intent intent) {
+        String vaultName = intent.getStringExtra("vault_name");
+        double remaining = intent.getDoubleExtra("remaining", 0);
+
+        String message = String.format("%s is running low: ₹%.0f remaining", vaultName, remaining);
+
+        sendNotification(
+                context,
+                "⚠️ Spending Limit Alert",
+                message,
+                3002
+        );
+    }
+
+    /**
+     * Handle device boot - reschedule alarms
+     */
+    private void handleBootCompleted(Context context) {
+        // TODO: Reschedule daily and monthly alarms using AlarmManager
+        // This would be implemented in a separate AlarmScheduler class
+    }
+
+    /**
+     * Send notification
+     */
+    private void sendNotification(Context context, String title, String message, int notificationId) {
+        createNotificationChannel(context);
+
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context, 0, intent, PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_payment)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(notificationId, builder.build());
+    }
+
+    /**
+     * Create notification channel
+     */
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Payment Alerts",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Alerts for vault balances and payment limits");
+
+            NotificationManager notificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
