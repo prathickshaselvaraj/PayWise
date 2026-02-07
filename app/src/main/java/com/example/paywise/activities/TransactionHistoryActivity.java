@@ -1,9 +1,8 @@
 package com.example.paywise.activities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,93 +10,195 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.paywise.R;
 import com.example.paywise.adapters.TransactionAdapter;
 import com.example.paywise.database.TransactionDao;
+import com.example.paywise.managers.PaymentManager;
 import com.example.paywise.models.Transaction;
 import com.example.paywise.utils.Constants;
-import com.example.paywise.utils.PreferenceManager;
-import java.util.ArrayList;
+import com.example.paywise.utils.SessionManager;
+import com.google.android.material.chip.Chip;
 import java.util.List;
 
-public class TransactionHistoryActivity extends AppCompatActivity {
+/**
+ * TransactionHistoryActivity - View all transactions with filtering
+ *
+ * Features:
+ * - Display all transactions for user (or specific vault)
+ * - Filter by status (All, Success, Failed)
+ * - Support vault reassignment for instant pay transactions
+ */
+public class TransactionHistoryActivity extends AppCompatActivity implements
+        TransactionAdapter.OnTransactionClickListener {
 
     private Toolbar toolbar;
-    private RecyclerView rvTransactions;
-    private TextView tvEmptyState;
+    private Chip chipAll;
+    private Chip chipSuccess;
+    private Chip chipFailed;
+    private RecyclerView recyclerViewTransactions;
+    private LinearLayout layoutEmptyState;
 
-    private TransactionDao transactionDao;
+    private SessionManager sessionManager;
+    private PaymentManager paymentManager;
     private TransactionAdapter transactionAdapter;
-    private PreferenceManager preferenceManager;
 
-    private List<Transaction> transactionList;
-    private int vaultId = -1;
+    private int userId;
+    private int vaultId = -1; // -1 means show all vaults
+    private String currentFilter = "all";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_history);
 
+        // Check if filtering by specific vault
+        vaultId = getIntent().getIntExtra("vault_id", -1);
+
         initializeViews();
+        initializeManagers();
         setupToolbar();
-
-        preferenceManager = new PreferenceManager(this);
-        transactionDao = new TransactionDao(this);
-
-        // Check if specific vault ID was passed
-        if (getIntent().hasExtra(Constants.EXTRA_VAULT_ID)) {
-            vaultId = getIntent().getIntExtra(Constants.EXTRA_VAULT_ID, -1);
-        }
-
-        setupRecyclerView();
+        setupFilterChips();
         loadTransactions();
     }
 
+    /**
+     * Initialize all UI components
+     */
     private void initializeViews() {
         toolbar = findViewById(R.id.toolbar);
-        rvTransactions = findViewById(R.id.rvTransactions);
-        tvEmptyState = findViewById(R.id.tvEmptyState);
+        chipAll = findViewById(R.id.chipAll);
+        chipSuccess = findViewById(R.id.chipSuccess);
+        chipFailed = findViewById(R.id.chipFailed);
+        recyclerViewTransactions = findViewById(R.id.recyclerViewTransactions);
+        layoutEmptyState = findViewById(R.id.layoutEmptyState);
     }
 
+    /**
+     * Initialize managers
+     */
+    private void initializeManagers() {
+        sessionManager = new SessionManager(this);
+        paymentManager = new PaymentManager(this);
+        userId = sessionManager.getUserId();
+    }
+
+    /**
+     * Setup toolbar
+     */
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    private void setupRecyclerView() {
-        transactionList = new ArrayList<>();
-        transactionAdapter = new TransactionAdapter(this, transactionList);
+    /**
+     * Setup filter chips
+     */
+    private void setupFilterChips() {
+        chipAll.setOnClickListener(v -> {
+            currentFilter = "all";
+            loadTransactions();
+        });
 
-        rvTransactions.setLayoutManager(new LinearLayoutManager(this));
-        rvTransactions.setAdapter(transactionAdapter);
+        chipSuccess.setOnClickListener(v -> {
+            currentFilter = Constants.TRANSACTION_STATUS_SUCCESS;
+            loadTransactions();
+        });
+
+        chipFailed.setOnClickListener(v -> {
+            currentFilter = Constants.TRANSACTION_STATUS_FAILED;
+            loadTransactions();
+        });
     }
 
+    /**
+     * Load transactions based on current filter
+     */
     private void loadTransactions() {
-        int userId = preferenceManager.getUserId();
+        List<Transaction> transactions;
 
         if (vaultId != -1) {
             // Load transactions for specific vault
-            transactionList = transactionDao.getTransactionsByVault(vaultId);
+            TransactionDao transactionDao = new TransactionDao(this);
+            transactions = transactionDao.getTransactionsByVault(vaultId);
         } else {
             // Load all transactions for user
-            transactionList = transactionDao.getAllTransactionsByUser(userId);
+            transactions = paymentManager.getAllTransactions(userId);
         }
 
-        if (transactionList.isEmpty()) {
-            tvEmptyState.setVisibility(View.VISIBLE);
-            rvTransactions.setVisibility(View.GONE);
+        // Apply filter
+        if (!currentFilter.equals("all")) {
+            transactions = filterTransactionsByStatus(transactions, currentFilter);
+        }
+
+        // Display transactions
+        if (transactions.isEmpty()) {
+            showEmptyState();
         } else {
-            tvEmptyState.setVisibility(View.GONE);
-            rvTransactions.setVisibility(View.VISIBLE);
-            transactionAdapter.updateTransactions(transactionList);
+            hideEmptyState();
+            displayTransactions(transactions);
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+    /**
+     * Filter transactions by status
+     */
+    private List<Transaction> filterTransactionsByStatus(List<Transaction> transactions, String status) {
+        List<Transaction> filtered = new java.util.ArrayList<>();
+        for (Transaction transaction : transactions) {
+            if (transaction.getStatus().equals(status)) {
+                filtered.add(transaction);
+            }
         }
-        return super.onOptionsItemSelected(item);
+        return filtered;
+    }
+
+    /**
+     * Display transactions in RecyclerView
+     */
+    private void displayTransactions(List<Transaction> transactions) {
+        recyclerViewTransactions.setLayoutManager(new LinearLayoutManager(this));
+        transactionAdapter = new TransactionAdapter(this, transactions);
+        transactionAdapter.setOnTransactionClickListener(this);
+        recyclerViewTransactions.setAdapter(transactionAdapter);
+    }
+
+    /**
+     * Show empty state
+     */
+    private void showEmptyState() {
+        recyclerViewTransactions.setVisibility(View.GONE);
+        layoutEmptyState.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Hide empty state
+     */
+    private void hideEmptyState() {
+        recyclerViewTransactions.setVisibility(View.VISIBLE);
+        layoutEmptyState.setVisibility(View.GONE);
+    }
+
+    /**
+     * Transaction clicked - show details
+     */
+    @Override
+    public void onTransactionClick(Transaction transaction, int position) {
+        // TODO: Show transaction details dialog
+    }
+
+    /**
+     * Change vault clicked - navigate to vault selection for reassignment
+     */
+    @Override
+    public void onChangeVaultClick(Transaction transaction, int position) {
+        // TODO: Navigate to VaultSelectionActivity for reassignment
+        // This would pass is_reassignment=true and transaction_id
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh transactions when returning to this screen
+        loadTransactions();
     }
 }
