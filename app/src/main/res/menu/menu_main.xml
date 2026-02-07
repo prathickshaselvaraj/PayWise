@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_transactions"
-        android:title="Transactions"
-        android:icon="@android:drawable/ic_menu_recent_history"
-        app:showAsAction="ifRoom"/>
-
-    <item
         android:id="@+id/action_profile"
-        android:title="@string/menu_profile"
-        android:icon="@android:drawable/ic_menu_myplaces"
-        app:showAsAction="never"/>
+        android:title="Profile"
+        android:icon="@drawable/ic_profile_placeholder"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"
-        android:title="@string/menu_settings"
-        android:icon="@android:drawable/ic_menu_preferences"
-        app:showAsAction="never"/>
+        android:title="Settings"
+        android:icon="@drawable/ic_settings"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_logout"
+        android:title="Logout"
+        app:showAsAction="never" />
+
 </menu>
