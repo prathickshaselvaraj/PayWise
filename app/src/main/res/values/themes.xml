@@ -1,22 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
-    <style name="Theme.PayWise" parent="Theme.MaterialComponents.DayLight.DarkActionBar">
-        <!-- Primary brand color. -->
+    <style name="Theme.PayWise" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primaryDark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
+
         <item name="colorSecondary">@color/accent</item>
         <item name="colorSecondaryVariant">@color/accent</item>
         <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
+
         <item name="android:statusBarColor">@color/primary</item>
     </style>
 
     <!-- Splash Screen Theme -->
-    <style name="Theme.PayWise.Splash" parent="Theme.MaterialComponents.DayLight.NoActionBar">
+    <style name="Theme.PayWise.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/primary</item>
         <item name="android:statusBarColor">@color/primary</item>
         <item name="android:navigationBarColor">@color/primary</item>
     </style>
+
 </resources>

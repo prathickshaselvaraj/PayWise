@@ -1,13 +1,10 @@
-
-package com.example.paywise.activities;
+package com.example.paywise;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,9 +13,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+
 import com.example.paywise.R;
 import com.example.paywise.managers.PaymentManager;
 import com.example.paywise.managers.VaultManager;
@@ -28,6 +27,7 @@ import com.example.paywise.services.PaymentValidationService;
 import com.example.paywise.utils.Constants;
 import com.example.paywise.utils.PreferenceManager;
 import com.google.android.material.textfield.TextInputEditText;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +90,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void setupSpinner() {
-        if (vaultList.isEmpty()) {
+        if (vaultList == null || vaultList.isEmpty()) {
             Toast.makeText(this, "No vaults available. Please create a vault first.", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -134,7 +134,6 @@ public class PaymentActivity extends AppCompatActivity {
             double remaining = selectedVault.getRemainingBalance();
             tvVaultRemaining.setText(String.format("Remaining: ₹%.2f", remaining));
 
-            // Change color based on remaining balance
             if (remaining <= 0) {
                 tvVaultRemaining.setTextColor(getResources().getColor(R.color.statusFailed));
             } else if (selectedVault.getSpendingPercentage() >= 70) {
@@ -155,18 +154,16 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void processPayment() {
-        String merchantName = etMerchantName.getText().toString().trim();
-        String amountStr = etAmount.getText().toString().trim();
-        String description = etDescription.getText().toString().trim();
+        String merchantName = etMerchantName.getText() != null ? etMerchantName.getText().toString().trim() : "";
+        String amountStr = etAmount.getText() != null ? etAmount.getText().toString().trim() : "";
+        String description = etDescription.getText() != null ? etDescription.getText().toString().trim() : "";
 
-        // Validate merchant name
         if (TextUtils.isEmpty(merchantName)) {
             etMerchantName.setError("Merchant name is required");
             etMerchantName.requestFocus();
             return;
         }
 
-        // Validate amount
         if (TextUtils.isEmpty(amountStr)) {
             etAmount.setError("Amount is required");
             etAmount.requestFocus();
@@ -192,8 +189,7 @@ public class PaymentActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if emergency vault - show confirmation dialog
-        if (selectedVault.getVaultType().equals(Constants.VAULT_TYPE_EMERGENCY)) {
+        if (Constants.VAULT_TYPE_EMERGENCY.equals(selectedVault.getVaultType())) {
             showEmergencyConfirmationDialog(merchantName, amount, description);
         } else {
             performPayment(merchantName, amount, description);
@@ -202,7 +198,7 @@ public class PaymentActivity extends AppCompatActivity {
 
     private void showEmergencyConfirmationDialog(final String merchantName, final double amount, final String description) {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.emergency_warning_title)
+                .setTitle(R.string.emergency_warning) // ✅ existing key
                 .setMessage(R.string.emergency_warning_message)
                 .setPositiveButton(R.string.btn_proceed, new DialogInterface.OnClickListener() {
                     @Override
@@ -216,25 +212,32 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void performPayment(String merchantName, double amount, String description) {
-        // Start foreground service for payment validation
         Intent serviceIntent = new Intent(this, PaymentValidationService.class);
         serviceIntent.putExtra("merchant_name", merchantName);
         serviceIntent.putExtra("amount", amount);
         startService(serviceIntent);
 
-        // Process payment
-        Transaction transaction = paymentManager.processPayment(
-                selectedVault.getVaultId(),
-                merchantName,
-                amount,
-                description
-        );
+        // ✅ Call the PUBLIC method that exists
+        Transaction transaction;
+        if (Constants.VAULT_TYPE_EMERGENCY.equals(selectedVault.getVaultType())) {
+            transaction = paymentManager.processEmergencyPayment(
+                    selectedVault.getVaultId(),
+                    merchantName,
+                    amount,
+                    description
+            );
+        } else {
+            transaction = paymentManager.processVaultBasedPayment(
+                    selectedVault.getVaultId(),
+                    merchantName,
+                    amount,
+                    description
+            );
+        }
 
-        // Stop foreground service
         stopService(serviceIntent);
 
-        // Show result
-        if (transaction.getStatus().equals(Constants.TRANSACTION_STATUS_SUCCESS)) {
+        if (transaction != null && Constants.TRANSACTION_STATUS_SUCCESS.equals(transaction.getStatus())) {
             Toast.makeText(this, getString(R.string.payment_success), Toast.LENGTH_SHORT).show();
             finish();
         } else {

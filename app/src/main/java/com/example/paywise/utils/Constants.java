@@ -116,6 +116,7 @@ public class Constants {
     public static final String COLOR_BLUE = "#3498DB";
     public static final String COLOR_GREEN = "#2ECC71";
     public static final String COLOR_YELLOW = "#F1C40F";
+    public static final String COLOR_ORANGE = "#FF9800";
     public static final String COLOR_PINK = "#E91E63";
     public static final String COLOR_BROWN = "#795548";
     public static final String COLOR_GREY = "#607D8B";

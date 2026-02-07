@@ -60,14 +60,26 @@
 
     <!-- Payment Entry -->
     <string name="pay_to">Pay to:</string>
+
+    <!-- ✅ Added missing string -->
+    <string name="merchant_name">Merchant Name</string>
+
     <string name="merchant_name_hint">Merchant Name / UPI ID</string>
     <string name="amount">Amount:</string>
     <string name="amount_hint">Enter amount</string>
     <string name="description">Description (Optional):</string>
     <string name="description_hint">Add note</string>
 
+    <!-- Payment Screen Title -->
+    <!-- ✅ Added missing string -->
+    <string name="payment_title">Payment</string>
+
     <!-- Vault Selection -->
     <string name="select_vault_title">Select a Vault</string>
+
+    <!-- ✅ Added missing string -->
+    <string name="select_vault">Select Vault</string>
+
     <string name="vault_available">Available:</string>
     <string name="vault_sufficient">Sufficient balance</string>
     <string name="vault_insufficient">Insufficient balance</string>

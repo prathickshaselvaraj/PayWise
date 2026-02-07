@@ -5,6 +5,15 @@
     <color name="primaryDark">#0052CC</color>
     <color name="accent">#34A853</color>
 
+    <!-- ✅ Aliases required by some XML files -->
+    <color name="colorPrimary">@color/primary</color>
+    <color name="backgroundColor">@color/backgroundSecondary</color>
+    <color name="cardBackground">@color/vaultCardBackground</color>
+
+    <!-- ✅ Status aliases used in UI -->
+    <color name="statusSuccess">@color/green</color>
+    <color name="statusFailed">@color/red</color>
+
     <!-- Background Colors -->
     <color name="backgroundPrimary">#FFFFFF</color>
     <color name="backgroundSecondary">#F5F5F5</color>

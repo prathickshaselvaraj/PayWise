@@ -1,6 +1,5 @@
 package com.example.paywise.receivers;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,9 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
+
+import com.example.paywise.MainActivity;     // ✅ correct
 import com.example.paywise.R;
-import com.example.paywise.activities.MainActivity;
 import com.example.paywise.database.TransactionDao;
 import com.example.paywise.utils.Constants;
 import com.example.paywise.utils.DateUtils;
@@ -23,10 +24,7 @@ public class PaymentAlertReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-
-        if (action == null) {
-            return;
-        }
+        if (action == null) return;
 
         switch (action) {
             case "com.example.paywise.LOW_BALANCE":
@@ -42,7 +40,6 @@ public class PaymentAlertReceiver extends BroadcastReceiver {
                 break;
         }
 
-        // Log broadcast action
         logBroadcastAction(context, action);
     }
 
@@ -88,11 +85,14 @@ public class PaymentAlertReceiver extends BroadcastReceiver {
         createNotificationChannel(context);
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
+        // ✅ Best practice for Android 12+
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
                 notificationId,
                 notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.CHANNEL_ID)

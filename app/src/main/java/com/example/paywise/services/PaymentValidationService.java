@@ -8,10 +8,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.example.paywise.MainActivity;   // ✅ correct
 import com.example.paywise.R;
-import com.example.paywise.activities.MainActivity;
 import com.example.paywise.database.TransactionDao;
 import com.example.paywise.utils.Constants;
 import com.example.paywise.utils.DateUtils;
@@ -33,48 +35,45 @@ public class PaymentValidationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String merchantName = intent.getStringExtra("merchant_name");
-        double amount = intent.getDoubleExtra("amount", 0.0);
+        String merchantName = intent != null ? intent.getStringExtra("merchant_name") : "";
+        double amount = intent != null ? intent.getDoubleExtra("amount", 0.0) : 0.0;
 
-        // Start foreground service with notification
         startForeground(Constants.NOTIFICATION_ID_PAYMENT, createNotification(merchantName, amount));
 
-        // Log service action
         logServiceAction("PaymentValidationService", "VALIDATE",
                 "Validating payment to " + merchantName + " for ₹" + amount);
 
-        // Simulate payment validation (in real app, this would do actual validation)
+        // ⚠️ Don't sleep on main thread in real apps. For now keeping your logic.
         try {
-            Thread.sleep(2000); // 2 seconds validation
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Stop foreground service
         stopForeground(true);
         stopSelf();
-
         return START_NOT_STICKY;
     }
 
     private Notification createNotification(String merchantName, double amount) {
         Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,
                 notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constants.CHANNEL_ID)
+        return new NotificationCompat.Builder(this, Constants.CHANNEL_ID)
                 .setContentTitle(getString(R.string.notif_payment_validation))
                 .setContentText("Processing payment to " + merchantName + " for ₹" + String.format("%.2f", amount))
                 .setSmallIcon(R.drawable.ic_vault_business)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(false);
-
-        return builder.build();
+                .setOngoing(true)
+                .build();
     }
 
     private void createNotificationChannel() {
