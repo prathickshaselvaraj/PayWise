@@ -1,94 +1,392 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/backgroundColor">
+    android:background="@color/backgroundPrimary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="24dp">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
-            android:layout_width="match_parent"
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:text="@string/create_custom_vault"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:layout_marginTop="60dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+        <!-- Vault Name Label -->
+        <TextView
+            android:id="@+id/tvVaultNameLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/vault_name"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Vault Name Input -->
+        <EditText
+            android:id="@+id/etVaultName"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:hint="e.g., My Grocery Budget"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:inputType="textCapWords"
+            android:background="@drawable/bg_input_field"
+            android:padding="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvVaultNameLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Vault Type Label -->
+        <TextView
+            android:id="@+id/tvVaultTypeLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/select_vault_type"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/etVaultName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Vault Type Options -->
+        <RadioGroup
+            android:id="@+id/radioGroupVaultType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvVaultTypeLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <RadioButton
+                android:id="@+id/radioFood"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/colorPrimary"
-                app:titleTextColor="@color/white"
-                app:navigationIcon="?attr/homeAsUpIndicator"
-                app:title="Add Vault"/>
-        </com.google.android.material.appbar.AppBarLayout>
+                android:layout_height="wrap_content"
+                android:text="🍔 Food"
+                android:textSize="16sp"
+                android:padding="8dp" />
 
+            <RadioButton
+                android:id="@+id/radioTravel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✈️ Travel"
+                android:textSize="16sp"
+                android:padding="8dp" />
+
+            <RadioButton
+                android:id="@+id/radioLifestyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🎨 Lifestyle"
+                android:textSize="16sp"
+                android:padding="8dp" />
+
+            <RadioButton
+                android:id="@+id/radioBusiness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💼 Business"
+                android:textSize="16sp"
+                android:padding="8dp" />
+
+            <RadioButton
+                android:id="@+id/radioCustom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vault_custom"
+                android:textSize="16sp"
+                android:padding="8dp" />
+
+        </RadioGroup>
+
+        <!-- Custom Category Section (Initially Hidden) -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/layoutCustomCategory"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/padding_large"
-            app:layout_constraintTop_toBottomOf="@id/appBarLayout">
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/radioGroupVaultType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilVaultName"
+            <!-- Custom Category Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_category_name"
+                android:textSize="14sp"
+                android:textColor="@color/textSecondary" />
+
+            <EditText
+                android:id="@+id/etCustomCategory"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="56dp"
+                android:hint="@string/custom_category_hint"
+                android:textSize="16sp"
+                android:textColor="@color/textPrimary"
+                android:inputType="textCapWords"
+                android:background="@drawable/bg_input_field"
+                android:padding="16dp"
+                android:layout_marginTop="8dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etVaultName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/vault_name"
-                    android:inputType="text"/>
-            </com.google.android.material.textfield.TextInputLayout>
+            <!-- Icon Selection -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_icon"
+                android:textSize="14sp"
+                android:textColor="@color/textSecondary"
+                android:layout_marginTop="16dp" />
+
+            <GridLayout
+                android:id="@+id/gridIcons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="6"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/iconHealthcare"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="🏥"
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_icon_selector"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/iconEducation"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="📚"
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_icon_selector"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/iconHome"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="🏠"
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_icon_selector"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/iconEntertainment"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="🎮"
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_icon_selector"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/iconMedical"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="💊"
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_icon_selector"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/iconVehicle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="🚗"
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_icon_selector"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </GridLayout>
+
+            <!-- Color Selection -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_color"
+                android:textSize="14sp"
+                android:textColor="@color/textSecondary"
+                android:layout_marginTop="16dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutColorPicker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <View
+                    android:id="@+id/colorRed"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_color_circle"
+                    android:backgroundTint="@color/red"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <View
+                    android:id="@+id/colorBlue"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_color_circle"
+                    android:backgroundTint="@color/blue"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <View
+                    android:id="@+id/colorGreen"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_color_circle"
+                    android:backgroundTint="@color/green"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <View
+                    android:id="@+id/colorYellow"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_color_circle"
+                    android:backgroundTint="@color/yellow"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <View
+                    android:id="@+id/colorPurple"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_color_circle"
+                    android:backgroundTint="@color/purple"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <View
+                    android:id="@+id/colorOrange"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_color_circle"
+                    android:backgroundTint="@color/orange"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Monthly Limit Label -->
+        <TextView
+            android:id="@+id/tvMonthlyLimitLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/monthly_limit"
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutCustomCategory"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Monthly Limit Input -->
+        <LinearLayout
+            android:id="@+id/layoutMonthlyLimit"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_input_field"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvMonthlyLimitLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/select_vault_type"
-                android:textSize="@dimen/text_size_medium"
-                android:textColor="@color/textPrimary"
-                android:layout_marginTop="@dimen/margin_large"
-                android:layout_marginBottom="@dimen/margin_small"/>
+                android:text="₹"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary" />
 
-            <Spinner
-                android:id="@+id/spinnerVaultType"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/bg_vault_card"
-                android:padding="@dimen/padding_medium"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilMonthlyLimit"
+            <EditText
+                android:id="@+id/etMonthlyLimit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etMonthlyLimit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/monthly_limit"
-                    android:inputType="numberDecimal"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/btnSaveVault"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="@string/btn_save_vault"
-                android:textSize="@dimen/text_size_medium"
-                android:textColor="@color/white"
-                android:background="@drawable/bg_payment_button"
-                android:layout_marginTop="@dimen/margin_large"/>
+                android:hint="5000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary"
+                android:inputType="numberDecimal"
+                android:background="@android:color/transparent"
+                android:paddingStart="8dp" />
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</ScrollView>
+        <!-- Save Vault Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveVault"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:text="@string/btn_save_vault"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="32d
