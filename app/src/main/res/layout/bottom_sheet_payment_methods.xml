@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:padding="24dp">
+
+    <!-- Handle Bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/textSecondary"
+        android:alpha="0.3" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose Payment Method"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/textPrimary"
+        android:layout_marginTop="16dp" />
+
+    <!-- Payment Details Summary -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_payment_summary"
+        android:padding="16dp"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Paying to:"
+                android:textSize="12sp"
+                android:textColor="@color/textSecondary" />
+
+            <TextView
+                android:id="@+id/tvMerchantNameSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zomato"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amount:"
+                android:textSize="12sp"
+                android:textColor="@color/textSecondary" />
+
+            <TextView
+                android:id="@+id/tvAmountSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹450"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Payment Method Options -->
+    <RadioGroup
+        android:id="@+id/radioGroupPaymentMethods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp">
+
+        <!-- Vault-Based Payment -->
+        <RadioButton
+            android:id="@+id/radioVaultBased"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎯 Vault-Based Payment"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:padding="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select vault and pay"
+            android:textSize="12sp"
+            android:textColor="@color/textSecondary"
+            android:paddingStart="48dp"
+            android:paddingBottom="8dp" />
+
+        <!-- Instant Pay -->
+        <RadioButton
+            android:id="@+id/radioInstantPay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚡ Instant Pay"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:padding="12dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pay now, assign vault later (Auto → Lifestyle)"
+            android:textSize="12sp"
+            android:textColor="@color/textSecondary"
+            android:paddingStart="48dp"
+            android:paddingBottom="8dp" />
+
+        <!-- Emergency Payment -->
+        <RadioButton
+            android:id="@+id/radioEmergency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🚨 Emergency Payment 🔒"
+            android:textSize="16sp"
+            android:textColor="@color/textPrimary"
+            android:padding="12dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Use emergency funds (Requires special PIN)"
+            android:textSize="12sp"
+            android:textColor="@color/red"
+            android:paddingStart="48dp"
+            android:paddingBottom="8dp" />
+
+    </RadioGroup>
+
+    <!-- Proceed Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProceedPayment"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Proceed"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="12dp"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>
