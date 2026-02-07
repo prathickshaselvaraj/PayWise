@@ -3,43 +3,65 @@ package com.example.paywise.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.paywise.R;
-import com.example.paywise.utils.PreferenceManager;
+import com.example.paywise.database.UserDao;
+import com.example.paywise.utils.SessionManager;
 
+/**
+ * SplashActivity - App entry point with brand display
+ *
+ * Flow:
+ * 1. Show splash screen for 2 seconds
+ * 2. Check if user exists in database
+ * 3. If user exists → Navigate to LoginActivity
+ * 4. If no user → Navigate to AccountSetupActivity
+ */
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DELAY = 2000; // 2 seconds
-    private PreferenceManager preferenceManager;
+    private static final int SPLASH_DURATION = 2000; // 2 seconds
+
+    private SessionManager sessionManager;
+    private UserDao userDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        preferenceManager = new PreferenceManager(this);
+        // Initialize managers
+        sessionManager = new SessionManager(this);
+        userDao = new UserDao(this);
 
-        // Navigate after delay
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                navigateToNextScreen();
-            }
-        }, SPLASH_DELAY);
+        // Delayed navigation after splash duration
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            navigateToNextScreen();
+        }, SPLASH_DURATION);
     }
 
+    /**
+     * Determine which screen to navigate to based on user status
+     */
     private void navigateToNextScreen() {
         Intent intent;
 
-        if (preferenceManager.isLoggedIn()) {
-            // User already registered, go to MainActivity
-            intent = new Intent(SplashActivity.this, MainActivity.class);
+        // Check if any user exists in database
+        if (userDao.isUserExists()) {
+            // User exists → Go to login
+            intent = new Intent(SplashActivity.this, LoginActivity.class);
         } else {
-            // First time user, go to ProfileSetupActivity
-            intent = new Intent(SplashActivity.this, ProfileSetupActivity.class);
+            // No user → Go to account setup
+            intent = new Intent(SplashActivity.this, AccountSetupActivity.class);
         }
 
         startActivity(intent);
-        finish();
+        finish(); // Close splash so user can't go back to it
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Disable back button on splash screen
+        // Do nothing
     }
 }
